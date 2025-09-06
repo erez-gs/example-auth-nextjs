@@ -83,7 +83,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    
     console.log(loginName);
     console.log(password);
 
@@ -134,7 +133,7 @@ export async function POST(req: NextRequest) {
     }
 
     const sessionData = await createSessionResponse.json();
-    const { sessionId, sessionToken } = sessionData;
+    const { sessionId } = sessionData;
 
     console.log('Session created with ID:', sessionId);
 
@@ -145,7 +144,7 @@ export async function POST(req: NextRequest) {
         method: 'PATCH',
         headers: {
           Accept: 'application/json',
-          Authorization: `Bearer ${sessionToken}`, // Use session token for auth
+          Authorization: `Bearer ${accessToken}`, // Use access token for auth
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -200,7 +199,7 @@ export async function POST(req: NextRequest) {
         method: 'GET',
         headers: {
           Accept: 'application/json',
-          Authorization: `Bearer ${finalSessionToken}`,
+          Authorization: `Bearer ${accessToken}`, // Use access token for auth
         },
       },
     );
