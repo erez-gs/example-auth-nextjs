@@ -2,7 +2,7 @@ import './globals.css';
 import { Metadata } from 'next';
 import { ZitadelProvider } from '@/app/providers';
 import React from 'react';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -20,9 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-gray-50 min-h-screen flex flex-col">
-        <ErrorBoundary showDetails={process.env.NODE_ENV === 'development'}>
-          <ZitadelProvider>{children}</ZitadelProvider>
-        </ErrorBoundary>
+        <ZitadelProvider>{children}</ZitadelProvider>
       </body>
     </html>
   );
