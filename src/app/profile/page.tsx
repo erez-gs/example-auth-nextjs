@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { signIn, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 
-import { router } from 'next/client';
 import { SignOutButton } from '@/components/SignOutButton';
 
 export default function ProfilePage() {
