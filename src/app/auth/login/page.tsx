@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Suspense } from 'react';
 
-export function LoginPage() {
+function LoginPage() {
   const [loginName, setLoginName] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
