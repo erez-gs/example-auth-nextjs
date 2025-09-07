@@ -205,10 +205,11 @@ export const authOptions: NextAuthOptions = {
 
   session: {
     strategy: 'jwt',
-    maxAge: Number(process.env.SESSION_DURATION) || 3600,
+    // Fixed maxAge (seconds). Adjust if you need longer sessions.
+    maxAge: 3600,
   },
-
-  secret: process.env.SESSION_SECRET,
+  // Provide secret so middleware / getToken has stable encryption key
+  secret: process.env.NEXTAUTH_SECRET,
 
   /**
    * Custom page configurations for NextAuth.js

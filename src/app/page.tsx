@@ -1,16 +1,9 @@
-'use client';
+import { getServerSession } from 'next-auth';
+import { redirect } from 'next/navigation';
+import { authOptions } from '@/lib/auth';
 
-import { signIn } from 'next-auth/react';
-
-export default function Home() {
-  return (
-    <>
-      <button
-        onClick={() => signIn('zitadel')}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center space-x-2 mb-6 cursor-pointer"
-      ></button>
-
-      
-    </>
-  );
+export default async function Home() {
+  const session = await getServerSession(authOptions);
+  if (!session) redirect('/auth/login?callbackUrl=/');
+  redirect('/profile');
 }
