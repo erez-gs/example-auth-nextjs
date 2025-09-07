@@ -379,6 +379,35 @@ export const authOptions: NextAuthOptions = {
      * @returns The session object that your application will receive
      */
     async session({ session, token }) {
+      console.log('=== SESSION CALLBACK DEBUG ===');
+      console.log('Raw token object:', JSON.stringify(token, null, 2));
+
+      // Decode and log ID Token if present
+      if (token.idToken) {
+        try {
+          const idTokenPayload = JSON.parse(atob(token.idToken.split('.')[1]));
+          console.log('=== DECODED ID TOKEN ===');
+          console.log(JSON.stringify(idTokenPayload, null, 2));
+        } catch (error) {
+          console.error('Failed to decode ID token:', error);
+        }
+      }
+
+      // Decode and log Access Token if present
+      if (token.accessToken) {
+        try {
+          const accessTokenPayload = JSON.parse(
+            atob(token.accessToken.split('.')[1]),
+          );
+          console.log('=== DECODED ACCESS TOKEN ===');
+          console.log(JSON.stringify(accessTokenPayload, null, 2));
+        } catch (error) {
+          console.error('Failed to decode Access token:', error);
+        }
+      }
+
+      console.log('=== END SESSION DEBUG ===');
+
       session.idToken = token.idToken;
       session.accessToken = token.accessToken;
       session.error = token.error;
