@@ -14,7 +14,12 @@ Check out our Example Application to see it in action.
 
 The example repository includes a complete Next.js application, ready to run, that demonstrates how to integrate ZITADEL for user authentication.
 
-This example application showcases a typical web app authentication pattern: users start on a public landing page, click a login button to authenticate with ZITADEL, and are then redirected to a protected profile page displaying their user information. The app also includes secure logout functionality that clears the session and redirects users back to ZITADEL's logout endpoint. All protected routes are automatically secured using NextAuth.js middleware and session management, ensuring only authenticated users can access sensitive areas of your application.
+This example application showcases a typical web app authentication pattern: users start on a public landing page, click a login button to authenticate with ZITADEL (Authorization Code + PKCE), and are then redirected to a protected profile page displaying their user information. The app also includes:
+
+- Custom login wrapper page (`/auth/login`) that still leverages the hosted ZITADEL password form for maximum security
+- Custom signup helper page (`/auth/signup`) that links to the hosted self‑service registration screen
+- Secure logout functionality calling ZITADEL end session
+- Automatic token refresh using refresh tokens (`offline_access` scope)
 
 ### Prerequisites
 
@@ -58,6 +63,7 @@ SESSION_SECRET="your-very-secret-and-strong-session-key"
 # instance settings. Include the full https:// URL.
 # Example: https://my-company-abc123.zitadel.cloud
 ZITADEL_DOMAIN="https://your-zitadel-domain"
+NEXT_PUBLIC_ZITADEL_DOMAIN="https://your-zitadel-domain" # exposed to client for building hosted UI links
 
 # Application Client ID from your ZITADEL application settings. This unique
 # identifier tells ZITADEL which application is making the authentication
@@ -121,6 +127,10 @@ Protected routes automatically redirect unauthenticated users to the login flow,
 ### Logout Flow
 
 Complete logout implementation that properly terminates both the local session and the ZITADEL session, with proper redirect handling.
+
+### Custom Signup & Login Wrapper
+
+We keep passwords OUT of the application surface. The user types credentials only on ZITADEL's hosted UI while we offer a branded entry experience. The legacy experimental embedded Session API username/password route has been removed for clarity and security.
 
 ## TODOs
 

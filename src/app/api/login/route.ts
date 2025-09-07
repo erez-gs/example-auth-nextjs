@@ -19,11 +19,65 @@ import jwt from 'jsonwebtoken';
 
 const ZITADEL_ISSUER = process.env.ZITADEL_ISSUER;
 const ZITADEL_KEY_JSON = process.env.ZITADEL_KEY_JSON;
+// New (provide these in .env.local):
+// ZITADEL_PROJECT_ID=336126908624278328
+// ZITADEL_APP_ID=336126999355462456 (optional, narrows audience to a specific app)
+const ZITADEL_PROJECT_ID = process.env.ZITADEL_PROJECT_ID;
+const ZITADEL_APP_ID = process.env.ZITADEL_APP_ID; // optional
+// system | project | app (default system because session API examples use system audience 'zitadel')
+const ZITADEL_SESSION_AUDIENCE_MODE =
+  process.env.ZITADEL_SESSION_AUDIENCE_MODE || 'system';
+const ZITADEL_ADD_OFFLINE_ACCESS =
+  (process.env.ZITADEL_ADD_OFFLINE_ACCESS || 'false').toLowerCase() === 'true';
+
+function buildScope(): string {
+  const base = ['openid', 'profile', 'email'];
+  if (ZITADEL_ADD_OFFLINE_ACCESS) base.push('offline_access');
+
+  const audience: string[] = [];
+  switch (ZITADEL_SESSION_AUDIENCE_MODE) {
+    case 'app':
+      if (ZITADEL_PROJECT_ID && ZITADEL_APP_ID) {
+        audience.push(
+          `urn:zitadel:iam:org:project:app:id:${ZITADEL_PROJECT_ID}:${ZITADEL_APP_ID}:aud`,
+        );
+      } else {
+        throw new Error(
+          'Audience mode app requires ZITADEL_PROJECT_ID and ZITADEL_APP_ID',
+        );
+      }
+      break;
+    case 'project':
+      if (ZITADEL_PROJECT_ID) {
+        audience.push(
+          `urn:zitadel:iam:org:project:id:${ZITADEL_PROJECT_ID}:aud`,
+        );
+      } else {
+        throw new Error('Audience mode project requires ZITADEL_PROJECT_ID');
+      }
+      break;
+    case 'system':
+    default:
+      audience.push('urn:zitadel:iam:org:project:id:zitadel:aud');
+      break;
+  }
+
+  return [...base, ...audience].join(' ');
+}
 
 async function getAccessToken() {
   if (!ZITADEL_KEY_JSON) {
     throw new Error('ZITADEL_KEY_JSON not set');
   }
+
+  // Debug: log presence (not values) of critical env vars
+  console.log('[zitadel] env presence', {
+    issuer: !!ZITADEL_ISSUER,
+    projectId: ZITADEL_PROJECT_ID || '(missing)',
+    appId: ZITADEL_APP_ID || '(none)',
+    audienceMode: ZITADEL_SESSION_AUDIENCE_MODE,
+    offlineAccess: ZITADEL_ADD_OFFLINE_ACCESS,
+  });
 
   const keyData = JSON.parse(ZITADEL_KEY_JSON);
   const userId = keyData.userId;
@@ -44,12 +98,19 @@ async function getAccessToken() {
     keyid: keyId,
   });
 
+  if (!ZITADEL_ISSUER) {
+    throw new Error('ZITADEL_ISSUER not set');
+  }
+
+  const scope = buildScope();
+  console.log('[zitadel] requesting token with scope:', scope);
+
   const tokenResponse = await fetch(`${ZITADEL_ISSUER}/oauth/v2/token`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      scope: 'urn:zitadel:iam:org:project:id:zitadel:aud',
+      scope,
       assertion: signedJwt,
     }),
   });
@@ -57,11 +118,14 @@ async function getAccessToken() {
   if (!tokenResponse.ok) {
     const errorText = await tokenResponse.text();
     console.error('Token request failed:', tokenResponse.status, errorText);
-    console.error('Request details:', {
+    console.error('[zitadel] token request details:', {
       url: `${ZITADEL_ISSUER}/oauth/v2/token`,
       userId,
       keyId,
       aud: ZITADEL_ISSUER,
+      scope,
+      projectId: ZITADEL_PROJECT_ID,
+      appId: ZITADEL_APP_ID,
     });
 
     throw new Error(`Failed to get access token: ${tokenResponse.status}`);
@@ -69,6 +133,18 @@ async function getAccessToken() {
 
   const tokenResponseJson = await tokenResponse.json();
   const { access_token } = tokenResponseJson;
+  try {
+    const decoded: unknown = jwt.decode(access_token);
+    if (decoded && typeof decoded === 'object') {
+  const aud = (decoded as Record<string, unknown>)['aud'];
+  const scopeClaim = (decoded as Record<string, unknown>)['scope'];
+      const iat = (decoded as Record<string, unknown>)['iat'];
+      const exp = (decoded as Record<string, unknown>)['exp'];
+  console.log('[zitadel] access token decoded', { aud, scope: scopeClaim, lifetimeSeconds: (typeof exp === 'number' && typeof iat === 'number') ? exp - iat : undefined });
+    }
+  } catch (e) {
+    console.warn('[zitadel] failed to decode access token', e);
+  }
   return access_token;
 }
 
