@@ -108,9 +108,6 @@ function LoginPage() {
               >
                 Forgot password?
               </a>
-              <p className="text-xs text-gray-500 pt-2">
-                Powered by <span className="font-semibold">ZITADEL</span>
-              </p>
             </div>
           </div>
         </div>

@@ -1,9 +1,10 @@
-"use client";
+'use client';
 import { signIn } from 'next-auth/react';
 import Link from 'next/link';
 
 export default function SignupPage() {
-  const zitadelDomain = process.env.NEXT_PUBLIC_ZITADEL_DOMAIN || process.env.ZITADEL_DOMAIN;
+  const zitadelDomain =
+    process.env.NEXT_PUBLIC_ZITADEL_DOMAIN || process.env.ZITADEL_DOMAIN;
   const clientId = process.env.ZITADEL_CLIENT_ID;
   const signupUrl = `${zitadelDomain}/ui/login/signup?client_id=${clientId}`;
   const recoverUrl = `${zitadelDomain}/ui/login/recover?client_id=${clientId}`;
@@ -12,7 +13,9 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Create your account</h1>
+          <h1 className="text-3xl font-bold text-gray-900">
+            Create your account
+          </h1>
           <p className="mt-2 text-sm text-gray-600">
             Account creation is securely handled by ZITADEL.
           </p>
@@ -20,9 +23,9 @@ export default function SignupPage() {
 
         <div className="bg-white shadow-lg rounded-lg px-8 py-8 space-y-6">
           <p className="text-sm text-gray-700 leading-relaxed">
-            When you click the button below you&apos;ll be redirected to ZITADEL&apos;s hosted
-            signup screen. After confirming your email (if required) you&apos;ll return here
-            and be signed in automatically.
+            When you click the button below you&apos;ll be redirected to
+            ZITADEL&apos;s hosted signup screen. After confirming your email (if
+            required) you&apos;ll return here and be signed in automatically.
           </p>
 
           <div className="space-y-4">
@@ -50,11 +53,13 @@ export default function SignupPage() {
             </p>
             <p>
               Need to sign in instead?{' '}
-              <Link className="text-blue-600 hover:underline" href="/auth/login">
+              <Link
+                className="text-blue-600 hover:underline"
+                href="/auth/login"
+              >
                 Go to login
               </Link>
             </p>
-            <p className="pt-2">Powered by ZITADEL</p>
           </div>
         </div>
       </div>
