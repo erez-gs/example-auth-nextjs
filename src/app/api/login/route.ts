@@ -83,10 +83,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    console.log(loginName);
-    console.log(password);
-
     const accessToken = await getAccessToken();
+
+    console.log(
+      '11111111111111111111111111111111111111111111111111111111111111111111111111',
+    );
+    console.log('Access Token:', accessToken);
 
     // Step 1: Create Session with User Check (as per ZITADEL docs)
     const createSessionResponse = await fetch(`${ZITADEL_ISSUER}/v2/sessions`, {
