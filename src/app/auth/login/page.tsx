@@ -96,7 +96,7 @@ function LoginPage() {
               >
                 Sign in without email prefill
               </button>
-              <a
+              {/* <a
                 href={`${process.env.NEXT_PUBLIC_ZITADEL_DOMAIN || process.env.ZITADEL_DOMAIN}/ui/login/signup?client_id=${process.env.ZITADEL_CLIENT_ID}`}
                 className="text-blue-600 hover:underline"
               >
@@ -107,7 +107,7 @@ function LoginPage() {
                 className="text-blue-600 hover:underline"
               >
                 Forgot password?
-              </a>
+              </a> */}
             </div>
           </div>
         </div>
