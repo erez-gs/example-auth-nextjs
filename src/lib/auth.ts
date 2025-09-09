@@ -379,9 +379,6 @@ export const authOptions: NextAuthOptions = {
      * @returns The session object that your application will receive
      */
     async session({ session, token }) {
-      console.log('=== SESSION CALLBACK DEBUG ===');
-      console.log('Raw token object:', JSON.stringify(token, null, 2));
-
       // Decode and log ID Token if present
       if (token.idToken) {
         try {
